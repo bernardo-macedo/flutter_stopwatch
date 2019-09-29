@@ -14,7 +14,10 @@ class BaseMaterialApp extends StatelessWidget {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      theme: ThemeData.dark(),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        fontFamily: 'BeVietnam',
+      ),
       supportedLocales: supportedLocales,
       initialRoute: Home.routeName,
       onGenerateRoute: getRouteFactory,
