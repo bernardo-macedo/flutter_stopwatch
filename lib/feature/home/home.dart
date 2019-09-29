@@ -14,17 +14,28 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(20),
-        color: Colors.grey[800],
         child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Stack(
             children: <Widget>[
-              Text(
-                L10n.getString(context, 'home_title'),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 50,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Image.asset(
+                    'images/ic_stopwatch.png',
+                    width: 60,
+                    height: 60,
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    L10n.getString(context, 'home_title'),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 50,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
