@@ -3,6 +3,6 @@
 
 class Strings {
   Map<String, Map<String, String>> map = <String, Map<String, String>>{
-    "home_title": {"en": "Home", "pt": "Início"}
+    "home_title": {"en": "Stopwatch", "pt": "Cronômetro"}
   };
 }

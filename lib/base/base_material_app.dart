@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_stopwatch/config/l10n.dart';
-import 'package:flutter_stopwatch/feature/home/home.dart';
 import 'package:flutter_stopwatch/config/routes.dart';
+import 'package:flutter_stopwatch/feature/home/home.dart';
 
 class BaseMaterialApp extends StatelessWidget {
   @override
@@ -14,6 +14,7 @@ class BaseMaterialApp extends StatelessWidget {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
+      theme: ThemeData.dark(),
       supportedLocales: supportedLocales,
       initialRoute: Home.routeName,
       onGenerateRoute: getRouteFactory,
