@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stopwatch/config/l10n.dart';
+import 'package:flutter_stopwatch/widgets/square_labeled_switch.dart';
 
 import 'home_view_state.dart';
 
@@ -18,41 +20,108 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.all(20),
-        child: SafeArea(
-          child: Stack(
-            children: <Widget>[
-              Column(
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            Align(
+              alignment: Alignment.topRight,
+              child: Image.asset(
+                'images/img_translucent_stopwatch.png',
+                scale: 1.5,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Image.asset(
-                    'images/ic_stopwatch.png',
-                    width: 60,
-                    height: 60,
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    L10n.getString(context, 'home_title'),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 50,
+                  buildStopwatchIcon(),
+                  verticalSpacing(),
+                  buildTitle(context),
+                  buildSwitchesRow(context),
+                  verticalSpacing(),
+                  buildSettingsButton(context),
+                  Spacer(),
+                  Container(
+                    padding: EdgeInsets.all(70),
+                    alignment: Alignment.bottomRight,
+                    child: RaisedButton(
+                      color: Colors.grey[700],
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      child: Text(L10n.getString(context, 'start_label')),
+                      onPressed: () {},
                     ),
-                  ),
-                  Switch(
-                    value: widget.viewState.isSoundEnabled,
-                    onChanged: (value) {
-                      widget.viewState.toggleSound(isSoundEnabled: value);
-                    },
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  RaisedButton buildSettingsButton(BuildContext context) {
+    return RaisedButton(
+      color: Colors.grey[700],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(Icons.settings),
+          Padding(
+            padding: EdgeInsets.only(left: 4.0),
+          ),
+          Text(L10n.getString(context, 'settings_label'))
+        ],
+      ),
+      onPressed: () {},
+    );
+  }
+
+  Row buildSwitchesRow(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        SquareLabeledSwitch(
+          label: Text(L10n.getString(context, 'sound_label')),
+          isEnabled: widget.viewState.isSoundEnabled,
+          onChanged: (value) {
+            widget.viewState.toggleSound(value);
+          },
+        ),
+        SquareLabeledSwitch(
+          label: Text(L10n.getString(context, 'vibration_label')),
+          isEnabled: widget.viewState.isVibrationEnabled,
+          onChanged: (value) {
+            widget.viewState.toggleVibration(value);
+          },
+        ),
+      ],
+    );
+  }
+
+  Text buildTitle(BuildContext context) {
+    return Text(
+      L10n.getString(context, 'home_title'),
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 50,
+      ),
+    );
+  }
+
+  SizedBox verticalSpacing() {
+    return SizedBox(
+      height: 16,
+    );
+  }
+
+  Image buildStopwatchIcon() {
+    return Image.asset(
+      'images/ic_stopwatch.png',
+      width: 60,
+      height: 60,
     );
   }
 }

@@ -1,13 +1,16 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 
 class HomeViewState extends ChangeNotifier {
   bool isSoundEnabled = false;
   bool isVibrationEnabled = false;
 
-  Future<void> toggleSound({bool isSoundEnabled}) async {
+  void toggleSound(bool isSoundEnabled) {
     this.isSoundEnabled = isSoundEnabled;
+    notifyListeners();
+  }
+
+  void toggleVibration(bool isVibrationEnabled) {
+    this.isVibrationEnabled = isVibrationEnabled;
     notifyListeners();
   }
 }
