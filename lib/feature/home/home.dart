@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stopwatch/config/l10n.dart';
 
+import 'home_view_state.dart';
+
 class Home extends StatefulWidget {
   static const routeName = '/';
+
+  final HomeViewState viewState;
+
+  const Home({Key key, this.viewState}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -34,6 +40,12 @@ class _HomeState extends State<Home> {
                       color: Colors.white,
                       fontSize: 50,
                     ),
+                  ),
+                  Switch(
+                    value: widget.viewState.isSoundEnabled,
+                    onChanged: (value) {
+                      widget.viewState.toggleSound(isSoundEnabled: value);
+                    },
                   ),
                 ],
               ),
