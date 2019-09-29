@@ -15,8 +15,8 @@ class SquareLabeledSwitch extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Switch(
-          activeThumbImage: AssetImage('images/switch_thumb_on'),
-          inactiveThumbImage: AssetImage('images/switch_thumb_off'),
+          activeColor: Colors.white,
+          inactiveThumbColor: Colors.grey,
           value: isEnabled,
           onChanged: onChanged,
         ),

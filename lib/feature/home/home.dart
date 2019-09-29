@@ -27,7 +27,14 @@ class _HomeState extends State<Home> {
               alignment: Alignment.topRight,
               child: Image.asset(
                 'images/img_translucent_stopwatch.png',
-                scale: 1.5,
+                scale: 2.3,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Image.asset(
+                'images/img_clock.png',
+                scale: 2.3,
               ),
             ),
             Padding(
@@ -43,12 +50,14 @@ class _HomeState extends State<Home> {
                   buildSettingsButton(context),
                   Spacer(),
                   Container(
-                    padding: EdgeInsets.all(70),
+                    padding: EdgeInsets.all(60),
                     alignment: Alignment.bottomRight,
                     child: RaisedButton(
+                      elevation: 10,
                       color: Colors.grey[700],
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
                       child: Text(L10n.getString(context, 'start_label')),
                       onPressed: () {},
                     ),
@@ -62,8 +71,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  RaisedButton buildSettingsButton(BuildContext context) {
-    return RaisedButton(
+  FlatButton buildSettingsButton(BuildContext context) {
+    return FlatButton(
       color: Colors.grey[700],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Row(
