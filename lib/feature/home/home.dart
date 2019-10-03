@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stopwatch/config/l10n.dart';
 import 'package:flutter_stopwatch/util/view_helpers.dart';
 import 'package:flutter_stopwatch/widgets/square_labeled_switch.dart';
+import 'package:vibrate/vibrate.dart';
 
 import 'home_view_state.dart';
 
@@ -42,7 +43,7 @@ class _HomeState extends State<Home> {
                     width: double.infinity,
                     alignment: Alignment.centerRight,
                     child: Padding(
-                      padding: EdgeInsets.only(right: 20, bottom: 60),
+                      padding: EdgeInsets.only(right: 15, bottom: 60),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -115,6 +116,7 @@ class _HomeState extends State<Home> {
           label: L10n.getString(context, 'vibration_label'),
           isEnabled: widget.viewState.isVibrationEnabled,
           onChanged: (value) {
+            if (value) Vibrate.vibrate();
             widget.viewState.toggleVibration(value);
           },
         ),
