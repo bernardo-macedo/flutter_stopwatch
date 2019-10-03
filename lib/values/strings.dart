@@ -7,6 +7,8 @@ class Strings {
     "vibration_label": {"en": "Vibration", "pt": "Vibração"},
     "sound_label": {"en": "Sound", "pt": "Som"},
     "settings_label": {"en": "Settings", "pt": "Configurações"},
+    "seconds_label": {"en": "sec.", "pt": "s"},
+    "minutes_label": {"en": "minutes", "pt": "minutos"},
     "start_label": {"en": "START", "pt": "INICIAR"},
   };
 }

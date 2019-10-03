@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SquareLabeledSwitch extends StatelessWidget {
-  final Widget label;
+  final String label;
   final bool isEnabled;
   final ValueChanged<bool> onChanged;
 
@@ -21,10 +21,21 @@ class SquareLabeledSwitch extends StatelessWidget {
           onChanged: onChanged,
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: label,
+          padding: const EdgeInsets.only(right: 8),
+          child: Text(
+            label,
+            style: TextStyle(color: getTextColor()),
+          ),
         )
       ],
     );
+  }
+
+  Color getTextColor() {
+    if (isEnabled) {
+      return Colors.white;
+    } else {
+      return Colors.grey;
+    }
   }
 }

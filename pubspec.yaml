@@ -70,11 +70,22 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: BeVietnam
+    - family: ExtraBold
       fonts:
-        - asset: fonts/BeVietnam-SemiBold.ttf
         - asset: fonts/BeVietnam-ExtraBold.ttf
-          weight: 700
+
+    - family: Regular
+      fonts:
+        - asset: fonts/BeVietnam-Regular.ttf
+
+    - family: Medium
+      fonts:
+        - asset: fonts/BeVietnam-Medium.ttf
+
+    - family: Bold
+      fonts:
+        - asset: fonts/BeVietnam-Bold.ttf
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
