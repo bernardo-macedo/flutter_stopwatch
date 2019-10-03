@@ -1,3 +1,4 @@
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stopwatch/config/l10n.dart';
@@ -19,6 +20,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  AudioCache audioCache = AudioCache(prefix: 'audio/');
+
+  @override
+  void initState() {
+    super.initState();
+    audioCache.load('cartoon_blink_flutter_shake.mp3');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    audioCache.clearCache();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,6 +123,7 @@ class _HomeState extends State<Home> {
           label: L10n.getString(context, 'sound_label'),
           isEnabled: widget.viewState.isSoundEnabled,
           onChanged: (value) {
+            if (value) audioCache.play('cartoon_blink_flutter_shake.mp3');
             widget.viewState.toggleSound(value);
           },
         ),
