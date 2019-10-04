@@ -1,15 +1,15 @@
 import 'package:flutter/widgets.dart';
 
 class ViewHelpers {
-  static SizedBox verticalSpacing({double height = 16}) {
+  static SizedBox verticalSpacing({double space = 16}) {
     return SizedBox(
-      height: height,
+      height: space,
     );
   }
 
-  static SizedBox horizontalSpacing({double width = 8}) {
+  static SizedBox horizontalSpacing({double space = 8}) {
     return SizedBox(
-      width: width,
+      width: space,
     );
   }
 }

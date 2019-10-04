@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stopwatch/config/l10n.dart';
-import 'package:flutter_stopwatch/util/time_picker.dart';
+import 'package:flutter_stopwatch/feature/home/home_view.dart';
 import 'package:flutter_stopwatch/util/view_helpers.dart';
 import 'package:flutter_stopwatch/widgets/square_labeled_switch.dart';
 import 'package:vibrate/vibrate.dart';
@@ -20,97 +22,33 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with HomeView {
   AudioCache audioCache = AudioCache();
   DateTime _dateTime;
+  Timer timer;
 
   @override
   void initState() {
-    super.initState();
     audioCache.load('sound.mp3');
+    timer = new Timer.periodic(new Duration(milliseconds: 30), callback);
+    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     audioCache.clearCache();
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            buildTopRightBgImage(),
-            buildBottomRightBgImage(),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  buildStopwatchIcon(),
-                  ViewHelpers.verticalSpacing(),
-                  buildTitle(context),
-                  buildSwitchesRow(context),
-                  Spacer(),
-                  buildTimePicker(),
-                  ViewHelpers.verticalSpacing(),
-                  Container(
-                    width: double.infinity,
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 15, bottom: 60),
-                      child: buildStartButton(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: buildHomeBody(context),
     );
   }
 
-  Widget buildBottomRightBgImage() {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: Opacity(
-        opacity: 0.3,
-        child: Image.asset(
-          'images/img_clock.png',
-          scale: 2.3,
-        ),
-      ),
-    );
-  }
-
-  Widget buildTopRightBgImage() {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Image.asset(
-        'images/img_translucent_stopwatch.png',
-        scale: 2.3,
-      ),
-    );
-  }
-
-  Widget buildStopwatchIcon() {
-    return Image.asset(
-      'images/ic_stopwatch.png',
-      width: 60,
-      height: 60,
-    );
-  }
-
-  Widget buildTitle(BuildContext context) {
-    return Text(
-      L10n.getString(context, 'home_title'),
-      style: TextStyle(color: Colors.white, fontFamily: 'Medium', fontSize: 50),
-    );
-  }
-
+  @override
   Widget buildSwitchesRow(BuildContext context) {
     return Row(
       children: <Widget>[
@@ -122,7 +60,7 @@ class _HomeState extends State<Home> {
             widget.viewState.toggleSound(value);
           },
         ),
-        ViewHelpers.horizontalSpacing(width: 40),
+        ViewHelpers.horizontalSpacing(space: 40),
         SquareLabeledSwitch(
           label: L10n.getString(context, 'vibration_label'),
           isEnabled: widget.viewState.isVibrationEnabled,
@@ -135,46 +73,99 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget buildTimePicker() {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(10)),
-      child: TimePickerSpinner(
-        normalTextStyle: TextStyle(
-          fontFamily: 'Regular',
-          fontSize: 40,
-          color: Colors.grey.withOpacity(0.5),
-        ),
-        highlightedTextStyle: TextStyle(
-          fontFamily: 'Regular',
-          fontSize: 60,
-          color: Colors.white,
-        ),
-        itemHeight: 80,
-        itemWidth: 80,
-        onTimeChange: (time) {
+  @override
+  Widget buildTimeWidget() {
+    if (widget.viewState.isStopped) {
+      return buildTimePicker(
+        (time) {
           setState(() {
             _dateTime = time;
           });
         },
+      );
+    } else {
+      return buildStopwatch();
+    }
+  }
+
+  Widget buildStopwatch() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        children: <Widget>[
+          buildTextTime(""),
+        ],
       ),
     );
   }
 
-  Widget buildStartButton(BuildContext context) {
-    return RaisedButton(
-      padding: EdgeInsets.only(top: 8, bottom: 12),
-      elevation: 10,
-      color: Colors.grey[700],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Text(
-        L10n.getString(context, 'start_label'),
-        style: TextStyle(fontSize: 18),
-      ),
-      onPressed: () {},
+  @override
+  Widget buildButtonsRow(BuildContext context) {
+    List<Widget> contents = [];
+    if (widget.viewState.isStopped) {
+      contents.add(buildStartButton(context));
+    } else if (widget.viewState.isStarted) {
+      contents.add(buildPauseButton(context));
+      contents.add(buildStopButton(context));
+    } else if (widget.viewState.isPaused) {
+      contents.add(buildContinueButton(context));
+      contents.add(buildStopButton(context));
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: contents,
     );
+  }
+
+  Widget buildStartButton(BuildContext context) {
+    return buildButton(
+      L10n.getString(context, 'start_label'),
+      () {
+        widget.viewState.startTimer();
+      },
+    );
+  }
+
+  Widget buildPauseButton(BuildContext context) {
+    return buildButton(
+      L10n.getString(context, 'pause_label'),
+      () {
+        widget.viewState.pauseTimer();
+      },
+    );
+  }
+
+  Widget buildContinueButton(BuildContext context) {
+    return buildButton(
+      L10n.getString(context, 'continue_label'),
+      () {
+        widget.viewState.continueTimer();
+      },
+    );
+  }
+
+  Widget buildStopButton(BuildContext context) {
+    return buildButton(L10n.getString(context, 'stop_label'), () {
+      widget.viewState.stopTimer();
+    }, color: Colors.black);
+  }
+
+  void callback(Timer timer) {
+//    if (milliseconds != dependencies.stopwatch.elapsedMilliseconds) {
+//      milliseconds = dependencies.stopwatch.elapsedMilliseconds;
+//      final int hundreds = (milliseconds / 10).truncate();
+//      final int seconds = (hundreds / 100).truncate();
+//      final int minutes = (seconds / 60).truncate();
+//      final ElapsedTime elapsedTime = new ElapsedTime(
+//        hundreds: hundreds,
+//        seconds: seconds,
+//        minutes: minutes,
+//      );
+//      for (final listener in dependencies.timerListeners) {
+//        listener(elapsedTime);
+//      }
+//    }
   }
 }
