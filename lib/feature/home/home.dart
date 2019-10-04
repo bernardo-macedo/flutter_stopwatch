@@ -20,7 +20,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with HomeView {
-  int totalMilliseconds;
+  int totalSeconds;
 
   @override
   void dispose() {
@@ -65,9 +65,9 @@ class _HomeState extends State<Home> with HomeView {
   Widget buildTimeWidget() {
     if (widget.viewState.isStopped) {
       return buildTimePicker(
-        (milliseconds) {
+        (seconds) {
           setState(() {
-            totalMilliseconds = milliseconds;
+            totalSeconds = seconds;
           });
         },
       );
@@ -82,7 +82,7 @@ class _HomeState extends State<Home> with HomeView {
           color: Colors.black.withOpacity(0.6),
           borderRadius: BorderRadius.circular(10)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           buildTextTime(widget.viewState.hoursStr),
           buildTextTime(":"),
@@ -118,7 +118,7 @@ class _HomeState extends State<Home> with HomeView {
     return buildButton(
       L10n.getString(context, 'start_label'),
       () {
-        widget.viewState.startTimer(totalMilliseconds);
+        widget.viewState.startTimer(totalSeconds);
       },
     );
   }

@@ -141,6 +141,19 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     return value > 10;
   }
 
+  int getSeconds() {
+    int hours = currentSelectedHourIndex - hourCount;
+    int minutes =
+        currentSelectedMinuteIndex - (isLoop(minuteCount) ? minuteCount : 1);
+    int seconds =
+        currentSelectedSecondIndex - (isLoop(secondsCount) ? secondsCount : 1);
+
+    int hoursInSeconds = hours * 60 * 60;
+    int minutesInSeconds = minutes * 60;
+
+    return hoursInSeconds + minutesInSeconds + seconds;
+  }
+
   int getMilliseconds() {
     int hour = currentSelectedHourIndex - hourCount;
     int minute =
@@ -175,7 +188,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
     if (widget.onTimeChange != null) {
       WidgetsBinding.instance
-          .addPostFrameCallback((_) => widget.onTimeChange(getMilliseconds()));
+          .addPostFrameCallback((_) => widget.onTimeChange(getSeconds()));
     }
   }
 
@@ -275,7 +288,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
             setState(() {
               onScrollEnd();
               if (widget.onTimeChange != null) {
-                widget.onTimeChange(getMilliseconds());
+                widget.onTimeChange(getSeconds());
               }
             });
           }

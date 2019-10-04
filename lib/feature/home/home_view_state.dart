@@ -8,9 +8,9 @@ class HomeViewState extends ChangeNotifier {
   Timer timer;
   AudioCache audioCache = AudioCache();
 
-  int totalMilliseconds;
-  int currentMillisecond;
-  int interval = 100;
+  int totalSeconds;
+  int currentSecond;
+  int interval = 1;
 
   bool isSoundEnabled = false;
   bool isVibrationEnabled = false;
@@ -22,9 +22,9 @@ class HomeViewState extends ChangeNotifier {
   bool keepVibrating = false;
   bool keepPlayingSound = false;
 
-  String hoursStr = "";
-  String minutesStr = "";
-  String secondsStr = "";
+  String hoursStr = "00";
+  String minutesStr = "00";
+  String secondsStr = "00";
 
   HomeViewState() {
     audioCache.load('sound.mp3');
@@ -40,48 +40,35 @@ class HomeViewState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startTimer(int totalMilliseconds) {
+  void startTimer(int totalSeconds) {
+    this.totalSeconds = totalSeconds;
+    this.currentSecond = totalSeconds;
+
     initTimer();
-    this.totalMilliseconds = totalMilliseconds;
-    this.currentMillisecond = totalMilliseconds;
 
-    this.isStarted = true;
-    this.isPaused = false;
-    this.isStopped = false;
-    this.isFinished = false;
-
-    notifyListeners();
+    updateViewStateAndNotifyListeners(
+        isStarted: true, isPaused: false, isStopped: false, isFinished: false);
   }
 
   void pauseTimer() {
-    this.isStarted = false;
-    this.isPaused = true;
-    this.isStopped = false;
-    this.isFinished = false;
-
-    notifyListeners();
+    updateViewStateAndNotifyListeners(
+        isStarted: false, isPaused: true, isStopped: false, isFinished: false);
   }
 
   void continueTimer() {
-    this.isStarted = true;
-    this.isPaused = false;
-    this.isStopped = false;
-    this.isFinished = false;
-
-    notifyListeners();
+    updateViewStateAndNotifyListeners(
+        isStarted: true, isPaused: false, isStopped: false, isFinished: false);
   }
 
   void stopTimer() {
+    this.totalSeconds = 0;
+    this.currentSecond = 0;
+
     cancelTimer();
-    this.totalMilliseconds = 0;
-    this.currentMillisecond = 0;
+    resetHoursMinutesSecondsStrings();
 
-    this.isStarted = false;
-    this.isPaused = false;
-    this.isStopped = true;
-    this.isFinished = false;
-
-    notifyListeners();
+    updateViewStateAndNotifyListeners(
+        isStarted: false, isPaused: false, isStopped: true, isFinished: false);
   }
 
   void resetTimer() {
@@ -93,40 +80,42 @@ class HomeViewState extends ChangeNotifier {
     cancelTimer();
     startAlarm();
 
-    this.isStarted = false;
-    this.isPaused = false;
-    this.isStopped = false;
-    this.isFinished = true;
+    updateViewStateAndNotifyListeners(
+        isStarted: false, isPaused: false, isStopped: false, isFinished: true);
+  }
+
+  void initTimer() {
+    callback();
+    this.timer = new Timer.periodic(new Duration(seconds: interval), (timer) {
+      callback();
+    });
+  }
+
+  void callback() {
+    setHoursMinutesSecondsStrings();
+
+    currentSecond -= interval;
+    if (currentSecond < 0) {
+      triggerAlarm();
+    }
+  }
+
+  void setHoursMinutesSecondsStrings() {
+    final int seconds = currentSecond;
+    final int minutes = (seconds / 60).truncate();
+    final int hours = (minutes / 60).truncate();
+
+    hoursStr = (hours % 24).toString().padLeft(2, '0');
+    minutesStr = (minutes % 60).toString().padLeft(2, '0');
+    secondsStr = (seconds % 60).toString().padLeft(2, '0');
 
     notifyListeners();
   }
 
-  void callback(Timer timer) {
-    if (!isPaused && !isStopped) {
-      final int seconds = (currentMillisecond / 1000).truncate();
-      final int minutes = (seconds / 60).truncate();
-      final int hours = (minutes / 60).truncate();
-
-      hoursStr = (hours % 24).toString().padLeft(2, '0');
-      minutesStr = (minutes % 60).toString().padLeft(2, '0');
-      secondsStr = (seconds % 60).toString().padLeft(2, '0');
-
-      currentMillisecond -= interval;
-      if (currentMillisecond < 1) {
-        triggerAlarm();
-      }
-
-      notifyListeners();
-    }
-  }
-
-  void initTimer() {
-    this.timer =
-        new Timer.periodic(new Duration(milliseconds: interval), callback);
-  }
-
-  void cancelTimer() {
-    timer?.cancel();
+  void resetHoursMinutesSecondsStrings() {
+    hoursStr = "00";
+    minutesStr = "00";
+    secondsStr = "00";
   }
 
   void startAlarm() {
@@ -138,11 +127,6 @@ class HomeViewState extends ChangeNotifier {
       keepVibrating = true;
       startVibration();
     }
-  }
-
-  void stopAlarm() {
-    keepPlayingSound = false;
-    keepVibrating = false;
   }
 
   void playSound({bool onlyOnce = false}) async {
@@ -166,7 +150,25 @@ class HomeViewState extends ChangeNotifier {
     }
   }
 
+  void updateViewStateAndNotifyListeners(
+      {bool isStarted, bool isPaused, bool isStopped, bool isFinished}) {
+    this.isStarted = isStarted;
+    this.isPaused = isPaused;
+    this.isStopped = isStopped;
+    this.isFinished = isFinished;
+    notifyListeners();
+  }
+
+  void stopAlarm() {
+    keepPlayingSound = false;
+    keepVibrating = false;
+  }
+
   void clearAudioCache() {
     audioCache.clearCache();
+  }
+
+  void cancelTimer() {
+    timer?.cancel();
   }
 }
