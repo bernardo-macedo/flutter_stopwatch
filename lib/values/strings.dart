@@ -9,6 +9,7 @@ class Strings {
     "start_label": {"en": "START", "pt": "INICIAR"},
     "pause_label": {"en": "PAUSE", "pt": "PAUSAR"},
     "continue_label": {"en": "CONTINUE", "pt": "CONTINUAR"},
-    "stop_label": {"en": "STOP", "pt": "CANCELAR"}
+    "stop_label": {"en": "STOP", "pt": "CANCELAR"},
+    "reset_label": {"en": "RESET", "pt": "REINICIAR"}
   };
 }

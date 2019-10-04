@@ -142,7 +142,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   }
 
   int getMilliseconds() {
-    int hour = currentSelectedHourIndex - hourCount + 12;
+    int hour = currentSelectedHourIndex - hourCount;
     int minute =
         currentSelectedMinuteIndex - (isLoop(minuteCount) ? minuteCount : 1);
     int second =

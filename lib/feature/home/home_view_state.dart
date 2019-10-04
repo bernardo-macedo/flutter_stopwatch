@@ -14,6 +14,7 @@ class HomeViewState extends ChangeNotifier {
   bool isStarted = false;
   bool isPaused = false;
   bool isStopped = true;
+  bool isFinished = false;
 
   String hoursStr = "";
   String minutesStr = "";
@@ -37,6 +38,7 @@ class HomeViewState extends ChangeNotifier {
     this.isStarted = true;
     this.isPaused = false;
     this.isStopped = false;
+    this.isFinished = false;
 
     notifyListeners();
   }
@@ -45,6 +47,7 @@ class HomeViewState extends ChangeNotifier {
     this.isStarted = false;
     this.isPaused = true;
     this.isStopped = false;
+    this.isFinished = false;
 
     notifyListeners();
   }
@@ -53,6 +56,7 @@ class HomeViewState extends ChangeNotifier {
     this.isStarted = true;
     this.isPaused = false;
     this.isStopped = false;
+    this.isFinished = false;
 
     notifyListeners();
   }
@@ -65,14 +69,29 @@ class HomeViewState extends ChangeNotifier {
     this.isStarted = false;
     this.isPaused = false;
     this.isStopped = true;
+    this.isFinished = false;
+
+    notifyListeners();
+  }
+
+  void resetTimer() {
+    stopTimer();
+  }
+
+  void triggerAlarm() {
+    cancelTimer();
+
+    this.isStarted = false;
+    this.isPaused = false;
+    this.isStopped = false;
+    this.isFinished = true;
 
     notifyListeners();
   }
 
   void callback(Timer timer) {
-    if (!isPaused) {
-      final int hundreds = (currentMillisecond / 10).truncate();
-      final int seconds = (hundreds / 100).truncate();
+    if (!isPaused && !isStopped) {
+      final int seconds = (currentMillisecond / 1000).truncate();
       final int minutes = (seconds / 60).truncate();
       final int hours = (minutes / 60).truncate();
 
@@ -82,7 +101,7 @@ class HomeViewState extends ChangeNotifier {
 
       currentMillisecond -= interval;
       if (currentMillisecond < 1) {
-        cancelTimer();
+        triggerAlarm();
       }
 
       notifyListeners();
@@ -91,7 +110,7 @@ class HomeViewState extends ChangeNotifier {
 
   void initTimer() {
     this.timer =
-        new Timer.periodic(new Duration(milliseconds: interval), callback);
+    new Timer.periodic(new Duration(milliseconds: interval), callback);
   }
 
   void cancelTimer() {

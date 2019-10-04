@@ -44,6 +44,12 @@ class _HomeState extends State<Home> with HomeView {
     );
   }
 
+  void triggerAlarmWhenFinished() {
+    if (widget.viewState.isFinished) {
+      // TODO
+    }
+  }
+
   @override
   Widget buildSwitchesRow(BuildContext context) {
     return Row(
@@ -113,6 +119,8 @@ class _HomeState extends State<Home> with HomeView {
     } else if (widget.viewState.isPaused) {
       contents.add(buildContinueButton(context));
       contents.add(buildStopButton(context));
+    } else if (widget.viewState.isFinished) {
+      contents.add(buildResetButton(context));
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -150,6 +158,12 @@ class _HomeState extends State<Home> with HomeView {
   Widget buildStopButton(BuildContext context) {
     return buildButton(L10n.getString(context, 'stop_label'), () {
       widget.viewState.stopTimer();
+    }, color: Colors.black);
+  }
+
+  Widget buildResetButton(BuildContext context) {
+    return buildButton(L10n.getString(context, 'reset_label'), () {
+      widget.viewState.resetTimer();
     }, color: Colors.black);
   }
 }
