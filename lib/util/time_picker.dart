@@ -78,7 +78,7 @@ class TimePickerSpinner extends StatefulWidget {
   final double itemWidth;
   final double spacing;
   final bool isForce2Digits;
-  final TimePickerCallback onTimeChange;
+  final Function onTimeChange;
 
   TimePickerSpinner(
       {Key key,
@@ -106,7 +106,6 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
   int hourCount = 24;
   int minuteCount = 60;
   int secondsCount = 60;
-  DateTime currentTime;
   bool isHourScrolling = false;
   bool isMinuteScrolling = false;
   bool isSecondsScrolling = false;
@@ -142,33 +141,32 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
     return value > 10;
   }
 
-  DateTime getDateTime() {
-    int hour = currentSelectedHourIndex - hourCount;
-    hour += 12;
+  int getMilliseconds() {
+    int hour = currentSelectedHourIndex - hourCount + 12;
     int minute =
         currentSelectedMinuteIndex - (isLoop(minuteCount) ? minuteCount : 1);
     int second =
         currentSelectedSecondIndex - (isLoop(secondsCount) ? secondsCount : 1);
-    return DateTime(currentTime.year, currentTime.month, currentTime.day, hour,
-        minute, second);
+
+    int hourInMilliseconds = hour * 60 * 60 * 1000;
+    int minutesInMilliseconds = minute * 60 * 1000;
+    int secondsInMilliseconds = second * 1000;
+
+    return hourInMilliseconds + minutesInMilliseconds + secondsInMilliseconds;
   }
 
   @override
   void initState() {
-    currentTime = widget.time == null ? DateTime.now() : widget.time;
-
-    currentSelectedHourIndex = (currentTime.hour % hourCount) + hourCount;
+    currentSelectedHourIndex = hourCount;
     hourController = new ScrollController(
         initialScrollOffset: (currentSelectedHourIndex - 1) * _getItemHeight());
 
-    currentSelectedMinuteIndex =
-        currentTime.minute + (isLoop(minuteCount) ? minuteCount : 1);
+    currentSelectedMinuteIndex = minuteCount;
     minuteController = new ScrollController(
         initialScrollOffset:
             (currentSelectedMinuteIndex - 1) * _getItemHeight());
 
-    currentSelectedSecondIndex =
-        currentTime.second + (isLoop(secondsCount) ? secondsCount : 1);
+    currentSelectedSecondIndex = secondsCount;
     secondController = new ScrollController(
         initialScrollOffset:
             (currentSelectedSecondIndex - 1) * _getItemHeight());
@@ -177,7 +175,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
 
     if (widget.onTimeChange != null) {
       WidgetsBinding.instance
-          .addPostFrameCallback((_) => widget.onTimeChange(getDateTime()));
+          .addPostFrameCallback((_) => widget.onTimeChange(getMilliseconds()));
     }
   }
 
@@ -277,7 +275,7 @@ class _TimePickerSpinnerState extends State<TimePickerSpinner> {
             setState(() {
               onScrollEnd();
               if (widget.onTimeChange != null) {
-                widget.onTimeChange(getDateTime());
+                widget.onTimeChange(getMilliseconds());
               }
             });
           }

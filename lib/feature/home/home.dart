@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,24 +22,18 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with HomeView {
   AudioCache audioCache = AudioCache();
-  DateTime _dateTime;
-  Timer timer;
-
-  String hoursStr = "";
-  String minutesStr = "";
-  String secondsStr = "";
+  int totalMilliseconds;
 
   @override
   void initState() {
     audioCache.load('sound.mp3');
-    timer = new Timer.periodic(new Duration(milliseconds: 30), callback);
     super.initState();
   }
 
   @override
   void dispose() {
     audioCache.clearCache();
-    timer?.cancel();
+    widget.viewState.cancelTimer();
     super.dispose();
   }
 
@@ -81,9 +73,9 @@ class _HomeState extends State<Home> with HomeView {
   Widget buildTimeWidget() {
     if (widget.viewState.isStopped) {
       return buildTimePicker(
-        (time) {
+        (milliseconds) {
           setState(() {
-            _dateTime = time;
+            totalMilliseconds = milliseconds;
           });
         },
       );
@@ -100,11 +92,11 @@ class _HomeState extends State<Home> with HomeView {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          buildTextTime(hoursStr),
+          buildTextTime(widget.viewState.hoursStr),
           buildTextTime(":"),
-          buildTextTime(minutesStr),
+          buildTextTime(widget.viewState.minutesStr),
           buildTextTime(":"),
-          buildTextTime(secondsStr)
+          buildTextTime(widget.viewState.secondsStr)
         ],
       ),
     );
@@ -132,7 +124,7 @@ class _HomeState extends State<Home> with HomeView {
     return buildButton(
       L10n.getString(context, 'start_label'),
       () {
-        widget.viewState.startTimer();
+        widget.viewState.startTimer(totalMilliseconds);
       },
     );
   }
@@ -159,19 +151,5 @@ class _HomeState extends State<Home> with HomeView {
     return buildButton(L10n.getString(context, 'stop_label'), () {
       widget.viewState.stopTimer();
     }, color: Colors.black);
-  }
-
-  void callback(Timer timer) {
-    int milliseconds = widget.viewState.stopwatch.elapsedMilliseconds;
-    final int hundreds = (milliseconds / 10).truncate();
-    final int seconds = (hundreds / 100).truncate();
-    final int minutes = (seconds / 60).truncate();
-    final int hours = (minutes / 60).truncate();
-
-    setState(() {
-      hoursStr = (hours % 24).toString().padLeft(2, '0');
-      minutesStr = (minutes % 60).toString().padLeft(2, '0');
-      secondsStr = (seconds % 60).toString().padLeft(2, '0');
-    });
   }
 }
