@@ -1,4 +1,3 @@
-import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stopwatch/config/l10n.dart';
@@ -21,18 +20,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with HomeView {
-  AudioCache audioCache = AudioCache();
   int totalMilliseconds;
 
   @override
-  void initState() {
-    audioCache.load('sound.mp3');
-    super.initState();
-  }
-
-  @override
   void dispose() {
-    audioCache.clearCache();
+    widget.viewState.clearAudioCache();
     widget.viewState.cancelTimer();
     super.dispose();
   }
@@ -44,12 +36,6 @@ class _HomeState extends State<Home> with HomeView {
     );
   }
 
-  void triggerAlarmWhenFinished() {
-    if (widget.viewState.isFinished) {
-      // TODO
-    }
-  }
-
   @override
   Widget buildSwitchesRow(BuildContext context) {
     return Row(
@@ -58,7 +44,7 @@ class _HomeState extends State<Home> with HomeView {
           label: L10n.getString(context, 'sound_label'),
           isEnabled: widget.viewState.isSoundEnabled,
           onChanged: (value) {
-            if (value) audioCache.play('sound.mp3');
+            if (value) widget.viewState.playSound(onlyOnce: true);
             widget.viewState.toggleSound(value);
           },
         ),

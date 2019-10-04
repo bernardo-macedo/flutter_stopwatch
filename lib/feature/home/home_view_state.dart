@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:vibrate/vibrate.dart';
 
 class HomeViewState extends ChangeNotifier {
   Timer timer;
+  AudioCache audioCache = AudioCache();
 
   int totalMilliseconds;
   int currentMillisecond;
@@ -16,9 +19,16 @@ class HomeViewState extends ChangeNotifier {
   bool isStopped = true;
   bool isFinished = false;
 
+  bool keepVibrating = false;
+  bool keepPlayingSound = false;
+
   String hoursStr = "";
   String minutesStr = "";
   String secondsStr = "";
+
+  HomeViewState() {
+    audioCache.load('sound.mp3');
+  }
 
   void toggleSound(bool isSoundEnabled) {
     this.isSoundEnabled = isSoundEnabled;
@@ -76,10 +86,12 @@ class HomeViewState extends ChangeNotifier {
 
   void resetTimer() {
     stopTimer();
+    stopAlarm();
   }
 
   void triggerAlarm() {
     cancelTimer();
+    startAlarm();
 
     this.isStarted = false;
     this.isPaused = false;
@@ -110,10 +122,51 @@ class HomeViewState extends ChangeNotifier {
 
   void initTimer() {
     this.timer =
-    new Timer.periodic(new Duration(milliseconds: interval), callback);
+        new Timer.periodic(new Duration(milliseconds: interval), callback);
   }
 
   void cancelTimer() {
     timer?.cancel();
+  }
+
+  void startAlarm() {
+    if (isSoundEnabled) {
+      keepPlayingSound = true;
+      playSound();
+    }
+    if (isVibrationEnabled) {
+      keepVibrating = true;
+      startVibration();
+    }
+  }
+
+  void stopAlarm() {
+    keepPlayingSound = false;
+    keepVibrating = false;
+  }
+
+  void playSound({bool onlyOnce = false}) async {
+    while (onlyOnce || !onlyOnce && keepPlayingSound) {
+      onlyOnce = false;
+      audioCache.play('sound.mp3');
+      // Wait for the vibration to complete
+      await Future.delayed(Duration(milliseconds: 500));
+      // Pause between this and the next vibration
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+  }
+
+  void startVibration() async {
+    while (keepVibrating) {
+      Vibrate.vibrate();
+      // Wait for the vibration to complete
+      await Future.delayed(Duration(milliseconds: 500));
+      // Pause between this and the next vibration
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+  }
+
+  void clearAudioCache() {
+    audioCache.clearCache();
   }
 }
