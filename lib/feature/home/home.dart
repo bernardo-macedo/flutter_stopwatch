@@ -27,6 +27,10 @@ class _HomeState extends State<Home> with HomeView {
   DateTime _dateTime;
   Timer timer;
 
+  String hoursStr = "";
+  String minutesStr = "";
+  String secondsStr = "";
+
   @override
   void initState() {
     audioCache.load('sound.mp3');
@@ -94,8 +98,13 @@ class _HomeState extends State<Home> with HomeView {
           color: Colors.black.withOpacity(0.6),
           borderRadius: BorderRadius.circular(10)),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          buildTextTime(""),
+          buildTextTime(hoursStr),
+          buildTextTime(":"),
+          buildTextTime(minutesStr),
+          buildTextTime(":"),
+          buildTextTime(secondsStr)
         ],
       ),
     );
@@ -153,19 +162,16 @@ class _HomeState extends State<Home> with HomeView {
   }
 
   void callback(Timer timer) {
-//    if (milliseconds != dependencies.stopwatch.elapsedMilliseconds) {
-//      milliseconds = dependencies.stopwatch.elapsedMilliseconds;
-//      final int hundreds = (milliseconds / 10).truncate();
-//      final int seconds = (hundreds / 100).truncate();
-//      final int minutes = (seconds / 60).truncate();
-//      final ElapsedTime elapsedTime = new ElapsedTime(
-//        hundreds: hundreds,
-//        seconds: seconds,
-//        minutes: minutes,
-//      );
-//      for (final listener in dependencies.timerListeners) {
-//        listener(elapsedTime);
-//      }
-//    }
+    int milliseconds = widget.viewState.stopwatch.elapsedMilliseconds;
+    final int hundreds = (milliseconds / 10).truncate();
+    final int seconds = (hundreds / 100).truncate();
+    final int minutes = (seconds / 60).truncate();
+    final int hours = (minutes / 60).truncate();
+
+    setState(() {
+      hoursStr = (hours % 24).toString().padLeft(2, '0');
+      minutesStr = (minutes % 60).toString().padLeft(2, '0');
+      secondsStr = (seconds % 60).toString().padLeft(2, '0');
+    });
   }
 }
